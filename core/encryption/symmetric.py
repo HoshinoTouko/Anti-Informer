@@ -35,8 +35,17 @@ class V1:
 
     @classmethod
     def encrypt_and_digest(cls, key, plaintext):
+        # Trans encrypt info to byte
+        key = trans_to_bytes(key)
+        # Encrypt
         ciphertext = cls.encrypt(key, plaintext)
-        h = HMAC.new(ciphertext, digestmod=SHA512)
+        # Expand key
+        h = SHA512.new()
+        h.update(key)
+        long_key = h.digest()
+        # Generate key
+        h = HMAC.new(long_key, digestmod=SHA512)
+        h.update(ciphertext)
         return ciphertext, h.digest()
 
     @classmethod
@@ -64,8 +73,13 @@ class V1:
         original_ciphertext = trans_to_bytes(original_ciphertext)
         # Decrypt
         plaintext = cls.decrypt(key, original_ciphertext)
+        # Expand key
+        h = SHA512.new()
+        h.update(key)
+        long_key = h.digest()
         # Verify
-        h = HMAC.new(original_ciphertext, digestmod=SHA512)
+        h = HMAC.new(long_key, digestmod=SHA512)
+        h.update(original_ciphertext)
         verified = True
         try:
             h.verify(tag)
@@ -85,4 +99,4 @@ if __name__ == '__main__':
     ciphertext, tag = V1.encrypt_and_digest(secret_key, message)
     print(ciphertext, tag)
     plain, verify = V1.decrypt_and_verify(secret_key, ciphertext, tag)
-    print(str(plain, encoding=config.encoding))
+    print(str(plain, encoding=config.encoding), verify)
