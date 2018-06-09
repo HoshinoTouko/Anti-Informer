@@ -19,7 +19,7 @@ import config
 class V1:
     @classmethod
     def encrypt(cls, key, plaintext):
-        # Trans encrypt info to byte
+        # Convert encrypt info to byte
         key = trans_to_bytes(key)
         plaintext = trans_to_bytes(plaintext)
 
@@ -35,7 +35,7 @@ class V1:
 
     @classmethod
     def encrypt_and_digest(cls, key, plaintext):
-        # Trans encrypt info to byte
+        # Convert encrypt info to byte
         key = trans_to_bytes(key)
         # Encrypt
         ciphertext = cls.encrypt(key, plaintext)
@@ -50,7 +50,7 @@ class V1:
 
     @classmethod
     def decrypt(cls, key, original_ciphertext):
-        # Trans decrypt info to byte
+        # Convert decrypt info to byte
         key = trans_to_bytes(key)
         original_ciphertext = trans_to_bytes(original_ciphertext)
 
@@ -68,7 +68,7 @@ class V1:
 
     @classmethod
     def decrypt_and_verify(cls, key, original_ciphertext, tag):
-        # Trans decrypt info to byte
+        # Convert decrypt info to byte
         key = trans_to_bytes(key)
         original_ciphertext = trans_to_bytes(original_ciphertext)
         # Decrypt
