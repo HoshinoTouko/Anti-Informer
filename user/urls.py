@@ -12,4 +12,7 @@ from django.urls import path
 from . import views
 
 
-urlpatterns = []
+urlpatterns = [
+    path('start_public_key_upload',
+         views.start_public_key_upload, name='start_public_key_upload'),
+]
