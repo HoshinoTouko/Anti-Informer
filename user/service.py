@@ -34,6 +34,6 @@ def pack_server_public_key(user_public_key):
     ret['ciphertext'] = str(base64.b64encode(ciphertext))[2:-2]
     ret['tag'] = str(base64.b64encode(tag))[2:-2]
 
-    signature = str(base64.b64encode(rsa.sign(get_private_key(), json.dumps(ret))))[2:-2]
+    signature = str(base64.b64encode(rsa.sign(get_private_key(), json.dumps(ret))), "utf-8")
 
     return ret, signature

@@ -7,9 +7,12 @@
 @Created at: 2018-06-09 17:09
 @Desc: 
 """
-from django.urls import path
-
 from . import views
 
+from django.urls import path
 
-urlpatterns = []
+
+urlpatterns = [
+    path('start',
+         views.start_new_session, name='start_new_session'),
+]

@@ -10,7 +10,7 @@ import json
 import base64
 
 
-def start_public_key_upload(request):
+def register(request):
     # Get post data
     user_name = request.POST.get('name')
     user_public_key = request.POST.get('public_key')
@@ -33,11 +33,11 @@ def start_public_key_upload(request):
             signature=str(base64.b64encode(user_signature), encoding='utf-8'),
         )
         payload, server_signature = pack_server_public_key(user_public_key)
-        return JsonResponse({
+        res = dict({
             'err': 0,
-            'payload': payload,
             'signature': server_signature
-        })
+        }, **payload)
+        return JsonResponse(res)
     return JsonResponse({
         'err': 1,
         'msg': 'Signature auth error'

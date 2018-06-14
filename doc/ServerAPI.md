@@ -6,29 +6,50 @@ This document is a design reference of server api. All development must be the s
 
 ### Key protocol (/key)
 
-#### Key register (New user register) (/upload)
+#### User
 
-##### Start
+##### POST: /user/register
 
-POST [\[/start\]](KeyProtocol.md/#send-pk-to-server) - 1
+```
+payload: {
+    name: username(Cannot repeat),
+    public_key: user_public_key
+},
+signature: sign(payload)
+```
 
-TODO: A new `auth_code` generator should be designed.
+res
 
-##### Register
+```
+payload: {
+    encrypt_session_key,
+    ciphertext,
+    tag
+},
+signature: signature(payload)
+```
 
-POST: [\[/register\]](KeyProtocol.md/#send-pk-to-server) - 5
+#### Session
 
-TODO: Check digital signature
+##### POST: /session/start
 
-#### Key exchange (/exchange)
+```
+payload: {
+    user: username
+}
+```
 
-##### Get all public
+res
 
-GET: [\[/public/all\]](KeyProtocol.md/#request-others-pk)
+```
+payload: {
+    key
+},
+signature: signature(payload)
+```
 
-##### Get public by username
+Server will generate a session or return a exist session with server signature.
 
-GET: [\[/public\]](KeyProtocol.md/#request-others-pk)
-params: username
+Next time when client ask for his message or send something to other, he has to append the session key to the message signature.
 
-
+The token is disposable.

@@ -13,6 +13,6 @@ from . import views
 
 
 urlpatterns = [
-    path('start_public_key_upload',
-         views.start_public_key_upload, name='start_public_key_upload'),
+    path('register',
+         views.register, name='register'),
 ]
