@@ -27,7 +27,7 @@ def create_session(username):
         finish=False
     )
     if len(session) > 0:
-        return session[0]
+        session[0].delete()
 
     salt = ''.join(random.sample(string.ascii_letters + string.digits, 32))
     key = user.username + '-' +  salt + '-' + str(time.time())

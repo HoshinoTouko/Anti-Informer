@@ -12,4 +12,7 @@ from django.urls import path
 from . import views
 
 
-urlpatterns = []
+urlpatterns = [
+    path('send', views.send, name='send'),
+    path('receive', views.receive, name='receive'),
+]

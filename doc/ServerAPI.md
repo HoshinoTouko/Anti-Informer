@@ -48,7 +48,7 @@ payload: {
 signature: signature(payload)
 ```
 
-Server will generate a session or return a exist session with server signature.
+Server will generate a session and delete exist session with server signature.
 
 Next time when client ask for his message or send something to other, he has to append the session key to the message signature.
 
