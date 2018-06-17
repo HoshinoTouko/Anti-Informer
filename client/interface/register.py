@@ -7,7 +7,7 @@
 @Created at: 2018-06-17 17:32
 @Desc: 
 """
-from client import userdata_service, key_service
+from client import userdata_service, key_service, server_connect_service
 from core.encryption.asymmetric import V1 as rsa
 from collections import OrderedDict
 
@@ -21,10 +21,9 @@ import base64
 
 def register_interface():
     name = input('Please input your name\n')
-    r = requests.get(config_client.server_ip + '/user/query').json().get('name')
 
     # Prevent duplicate user name
-    if name in r:
+    if name in server_connect_service.get_user_on_server():
         print('Duplicate user name, please re enter it.')
         return register_interface()
 

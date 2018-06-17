@@ -7,4 +7,9 @@
 @Created at: 2018-06-17 17:26
 @Desc: 
 """
+import requests
+import config_client
 
+
+def get_user_on_server():
+    return requests.get(config_client.server_ip + '/user/query').json().get('name')

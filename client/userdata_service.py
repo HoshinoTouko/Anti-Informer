@@ -8,7 +8,7 @@
 @Desc: 
 """
 from core.encryption.symmetric import V1 as chacha20
-from paths import password_check_path, unencrypted_data_path, private_key_path, public_key_path
+from paths import password_check_path, unencrypted_data_path, private_key_path, public_key_path, root_dir
 
 import os
 import json
@@ -49,6 +49,7 @@ def load_unencrypted_data(key):
 
 def save_unencrypted_data(key, value):
     if not os.path.exists(unencrypted_data_path):
+        os.makedirs(root_dir)
         json.dump({}, open(unencrypted_data_path, 'w'))
     try:
         unencrypted_data = json.load(open(unencrypted_data_path, 'r'))

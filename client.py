@@ -1,5 +1,6 @@
 from client import userdata_service
 from client.interface.register import register_interface
+from client.interface.send_message import send_message_interface
 
 import os
 import config
@@ -24,6 +25,9 @@ def client():
         if command == 'E':
             print('Good bye, see you next time.')
             exit(0)
+        elif command == 'S':
+            print('Send message')
+            send_message_interface()
 
 
 if __name__ == '__main__':
