@@ -63,7 +63,7 @@ def send(requests):
 
 def receive(requests):
     receiver = requests.POST.get('receiver')
-    is_read = requests.POST.get('is_read') == True
+    is_read = requests.POST.get('is_read') == 'True'
     token = requests.POST.get('token')
     signature = requests.POST.get('signature')
     # Check post data
