@@ -8,6 +8,7 @@ from core.encryption.asymmetric import V1 as rsa
 from server_key.server_key_service import get_private_key
 
 import json
+import base64
 
 
 def send(requests):
@@ -16,7 +17,7 @@ def send(requests):
     message = requests.POST.get('message')
     is_block = requests.POST.get('is_block') == 'True'
     token = requests.POST.get('token')
-    signature = requests.POST.get('signature')
+    signature = base64.b64decode(requests.POST.get('signature'))
 
     # Check post data
     if None in [sender, receiver, message, is_block, token, signature]:
@@ -33,7 +34,7 @@ def send(requests):
             'msg': 'User error' + str(e)
         })
     # Check token
-    if not auth_and_delete(token):
+    if not auth_and_delete(sender, token):
         return JsonResponse({
             'err': 1,
             'msg': 'Invalid token'
@@ -42,9 +43,10 @@ def send(requests):
     payload = OrderedDict()
     payload['sender'] = sender
     payload['receiver'] = receiver
+    payload['message'] = message
     payload['is_block'] = is_block
     payload['token'] = token
-    if not rsa.verify(sender.public_key, json.dumps(payload), signature):
+    if not rsa.verify(sender_instance.public_key, json.dumps(payload), signature):
         return JsonResponse({
             'err': 1,
             'msg': 'Invalid signature'
@@ -80,7 +82,7 @@ def receive(requests):
             'msg': 'User error' + str(e)
         })
     # Check token
-    if not auth_and_delete(token):
+    if not auth_and_delete(receiver, token):
         return JsonResponse({
             'err': 1,
             'msg': 'Invalid token'

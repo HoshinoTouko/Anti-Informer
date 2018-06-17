@@ -38,7 +38,7 @@ def create_session(username):
     )
 
 
-def auth_and_delete(username):
+def auth_and_delete(username, token):
     user = User.objects.filter(username=username)
     if len(user) != 1:
         return False
@@ -46,6 +46,7 @@ def auth_and_delete(username):
 
     session = Session.objects.filter(
         user=user,
+        key=token,
         finish=False
     )
     if len(session) == 0:
