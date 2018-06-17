@@ -22,6 +22,12 @@ python manage.py migrate
 python manage.py runserver 0.0.0.0:8000
 ```
 
+## Run client
+```
+python client.py
+```
+If you want to reset local data, just totally delete **.data/user/**
+
 ## Development reference
 
 PyCryptodome: http://pycryptodome.readthedocs.io/en/latest/index.html
