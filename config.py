@@ -10,3 +10,5 @@
 encoding = 'utf-8'
 
 rsa_key_length = 4096
+
+version = '0.0.1'

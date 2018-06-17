@@ -52,7 +52,7 @@ def query(request):
     if user_name is None:
         return JsonResponse({
             'err': 0,
-            'name': list(User.objects.values_list('username'))
+            'name': list(User.objects.values_list('username', flat=True))
         })
     # Get server public key
     if user_name == 'server':

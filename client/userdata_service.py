@@ -55,6 +55,8 @@ def save_unencrypted_data(key, value):
         new_data = dict(
             {key: value}, **unencrypted_data
         )
+        if len(value) > 20:
+            value = value[:19] + '....'
         print('Save unencrypted data `%s` - `%s`' % (key, value))
         json.dump(new_data, open(unencrypted_data_path, 'w'))
         return True
@@ -69,21 +71,27 @@ def check_pass(password):
 
     username = load_unencrypted_data('name')
     with open(password_check_path, 'r+') as fi:
-        check_data = base64.b64decode(bytes(''.join(fi.readlines()), encoding=config.encoding))
-        plaintext = str(chacha20.decrypt(password, check_data), encoding=config.encoding)
-        if username in plaintext:
-            fi.close()
-            generate_check_pass_file(username, password)
-            return True
+        try:
+            check_data = base64.b64decode(bytes(''.join(fi.readlines()), encoding=config.encoding))
+            plaintext = str(
+                chacha20.decrypt(password, check_data),
+                encoding=config.encoding
+            )
+            if username in plaintext:
+                fi.close()
+                generate_check_pass_file(username, password)
+                return True
+        except:
+            return False
         return False
 
 
 def generate_check_pass_file(username, password):
     with open(password_check_path, 'w+') as fi:
         new_check_data = '%s:%s:%s' % (
-            random.sample(string.ascii_letters + string.digits, random.randint(16, 32)),
+            ''.join(random.sample(string.ascii_letters + string.digits, random.randint(16, 32))),
             username,
-            random.sample(string.ascii_letters + string.digits, random.randint(16, 32))
+            ''.join(random.sample(string.ascii_letters + string.digits, random.randint(16, 32)))
         )
         enc_check_data = chacha20.encrypt(password, new_check_data)
         fi.write(str(base64.b64encode(enc_check_data), encoding=config.encoding))

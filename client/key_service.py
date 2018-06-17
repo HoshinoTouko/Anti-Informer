@@ -17,7 +17,7 @@ import base64
 import config
 
 
-def get_rsa_key(password, key_type):
+def get_rsa_key(key_type, password=''):
     if key_type == 'pk':
         res = ''.join(open(public_key_path, 'r').readlines())
     elif key_type == 'sk':
@@ -43,9 +43,10 @@ def generate_key(password, force=False):
             fi.write(str(pk, encoding=config.encoding))
     else:
         raise Exception('Key pair exist')
+    return True
 
 
 if __name__ == '__main__':
     # generate_key('123')
-    print(get_rsa_key('123', 'sk'))
-    print(get_rsa_key('123', 'pk'))
+    print(get_rsa_key('sk', '123'))
+    print(get_rsa_key('pk', '123'))

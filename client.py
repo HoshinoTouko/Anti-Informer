@@ -1,22 +1,30 @@
-from core.encryption.asymmetric import V1 as asy
+from client import userdata_service
+from client.interface.register import register_interface
+
 import os
-
-root_dir = os.path.dirname(os.path.abspath(__file__))
-try:
-    with open(root_dir+"/.data/user/key","r") as fsk:
-        sk = fsk.read()
-    with open(root_dir+"/.data/user/key.pub","r") as fpk:
-        pk = fpk.read()
-except IOError:
-    try:
-        sk, pk = asy.generate_key()
-        if not os.path.exists(root_dir+"/.data/user/"):
-            os.makedirs(root_dir+"/.data/user/") 
-        with open(root_dir+"/.data/user/key","wb+") as fsk:
-            fsk.write(sk)
-        with open(root_dir+"/.data/user/key.pub","wb+") as fpk:
-            fpk.write(pk)
-    except IOError:
-        print("无法写入密钥，请检查文件系统权限")
+import config
+import getpass
 
 
+def client():
+    # Welcome
+    print('Welcome to anti-informer application. App version is %s' % config.version)
+    # Check if the user is registered
+    if not userdata_service.check_user_data_integrity():
+        os.system('cls')
+        register_interface()
+
+    print('Login required')
+    password = ''
+    while not userdata_service.check_pass(password):
+        password = getpass.getpass('Please input your password\n')
+    while True:
+        os.system('cls')
+        command = input('Please input your command\n')
+        if command == 'E':
+            print('Good bye, see you next time.')
+            exit(0)
+
+
+if __name__ == '__main__':
+    client()
