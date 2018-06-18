@@ -49,3 +49,47 @@ def send_message(receiver, receiver_pk, message, my_pass, is_block=False):
     except Exception as e:
         print(str(e))
         return False
+
+def receive_message(receiver,my_pass,is_read=False):
+    payload = OrderedDict()
+    payload['receiver'] = receiver
+    payload['token'] = token_service.get_token()
+    signature = rsa.sign(key_service.get_rsa_key('sk', my_pass), json.dumps(payload))
+    payload['signature'] = base64.b64encode(signature)
+    payload['is_read'] = is_read
+    r = requests.post(config_client.server_ip + '/message/receive', payload)
+
+    try:
+        if r.json().get('err') == 0:
+            os.system('cls')
+            print("Success!")
+        else:
+            print("Failed")
+    except Exception as e:
+        print(str(e))
+        return False
+    msg =r.json().get('msg')
+    signature =  base64.b64decode(r.json().get('signature'))
+    if not rsa.verify(userdata_service.load_unencrypted_data('server_pk'), json.dumps(msg), signature):
+        print("您可能遇到了假的服务器")
+        return False
+    if (len(msg)>=3):
+        for i in msg[0:3]:
+            message = json.loads(i['message'])
+            encrypt_session_key = base64.b64decode(message['encrypt_session_key'])
+            ciphertext = base64.b64decode(message['ciphertext'])
+            tag = base64.b64decode(message['tag'])
+            plain, verify = rsa.decrypt(key_service.get_rsa_key('sk', my_pass), encrypt_session_key,ciphertext,tag)
+            if verify:
+                print(str(plain))
+    else:
+        for i in msg:
+            message = json.loads(i['message'])
+            encrypt_session_key = base64.b64decode(message['encrypt_session_key'])
+            ciphertext = base64.b64decode(message['ciphertext'])
+            tag = base64.b64decode(message['tag'])
+            plain, verify = rsa.decrypt(key_service.get_rsa_key('sk', my_pass), encrypt_session_key,ciphertext,tag)
+            if verify:
+                print(str(plain))
+    return True
+        

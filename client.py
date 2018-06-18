@@ -1,6 +1,7 @@
 from client import userdata_service
 from client.interface.register import register_interface
 from client.interface.send_message import send_message_interface
+from client.interface.receive_message import receive_message_interface
 
 import os
 import time
@@ -24,7 +25,7 @@ def client():
     time.sleep(1)
     os.system('cls')
     while True:
-        print('(E)xit\t(S)end\t')
+        print('(E)xit\t(S)end\t(R)eceive')
         command = input('Please input your command\n')
         if command == 'E':
             os.system('cls')
@@ -35,6 +36,10 @@ def client():
             os.system('cls')
             print('Send message')
             send_message_interface(password)
+        elif command == 'R':
+            os.system('cls')
+            print('Receive message')
+            receive_message_interface(password)
 
 
 if __name__ == '__main__':

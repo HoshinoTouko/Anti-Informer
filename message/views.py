@@ -7,6 +7,7 @@ from message.models import Message
 from core.encryption.asymmetric import V1 as rsa
 from server_key.server_key_service import get_private_key
 
+import config
 import json
 import base64
 
@@ -67,7 +68,7 @@ def receive(requests):
     receiver = requests.POST.get('receiver')
     is_read = requests.POST.get('is_read') == 'True'
     token = requests.POST.get('token')
-    signature = requests.POST.get('signature')
+    signature = base64.b64decode(requests.POST.get('signature'))
     # Check post data
     if None in [receiver, token, signature]:
         return JsonResponse({
@@ -96,15 +97,18 @@ def receive(requests):
             'err': 1,
             'msg': 'Invalid signature'
         })
-
-    msg = Message.objects.filter(receiver=receiver, is_read=is_read)
-    for m in msg:
-        m.is_read = True
-    msg = msg.values()
+    
+    msg = Message.objects.filter(receiver=receiver_instance, is_read=is_read)
+    msg = list(msg.values())
+    for i in msg:
+        i['created_at'] = str(i['created_at'])
 
     payload = OrderedDict()
     payload['msg'] = msg
-    server_signature = rsa.sign(get_private_key(), json.dumps(payload))
+    server_signature = str(
+        base64.b64encode(rsa.sign(get_private_key(), json.dumps(payload['msg']))),
+        encoding=config.encoding
+    )
     res = dict({
         'err': 0,
         'signature': server_signature
