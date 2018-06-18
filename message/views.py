@@ -98,13 +98,18 @@ def receive(requests):
             'msg': 'Invalid signature'
         })
     
-    msg = Message.objects.filter(receiver=receiver_instance, is_read=is_read)
-    msg = list(msg.values())
-    for i in msg:
-        i['created_at'] = str(i['created_at'])
+    msg_instances = Message.objects.filter(receiver=receiver_instance, is_read=is_read)
+    ret_msg = list(msg_instances.values())
+
+    for i in range(len(msg_instances)):
+        ret_msg[i]['sender'] = msg_instances[i].sender.username
+        ret_msg[i]['receiver'] = msg_instances[i].receiver.username
+        ret_msg[i]['created_at'] = str(msg_instances[i].created_at)
+        msg_instances[i].is_read = True
+        msg_instances[i].save()
 
     payload = OrderedDict()
-    payload['msg'] = msg
+    payload['msg'] = ret_msg
     server_signature = str(
         base64.b64encode(rsa.sign(get_private_key(), json.dumps(payload['msg']))),
         encoding=config.encoding

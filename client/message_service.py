@@ -10,6 +10,7 @@
 from core.encryption.asymmetric import V1 as rsa
 from collections import OrderedDict
 from client import userdata_service, token_service, key_service
+from client import server_connect_service
 
 import os
 import json
@@ -17,6 +18,7 @@ import base64
 import config
 import requests
 import config_client
+import prettytable
 
 
 def send_message(receiver, receiver_pk, message, my_pass, is_block=False):
@@ -50,7 +52,8 @@ def send_message(receiver, receiver_pk, message, my_pass, is_block=False):
         print(str(e))
         return False
 
-def receive_message(receiver,my_pass,is_read=False):
+
+def receive_message(receiver, my_pass, is_read=False):
     payload = OrderedDict()
     payload['receiver'] = receiver
     payload['token'] = token_service.get_token()
@@ -68,28 +71,27 @@ def receive_message(receiver,my_pass,is_read=False):
     except Exception as e:
         print(str(e))
         return False
-    msg =r.json().get('msg')
-    signature =  base64.b64decode(r.json().get('signature'))
+    msg = r.json().get('msg')
+    signature = base64.b64decode(r.json().get('signature'))
     if not rsa.verify(userdata_service.load_unencrypted_data('server_pk'), json.dumps(msg), signature):
         print("您可能遇到了假的服务器")
         return False
-    if (len(msg)>=3):
-        for i in msg[0:3]:
-            message = json.loads(i['message'])
-            encrypt_session_key = base64.b64decode(message['encrypt_session_key'])
-            ciphertext = base64.b64decode(message['ciphertext'])
-            tag = base64.b64decode(message['tag'])
-            plain, verify = rsa.decrypt(key_service.get_rsa_key('sk', my_pass), encrypt_session_key,ciphertext,tag)
-            if verify:
-                print(str(plain))
-    else:
+    num = 0
+    message_table = prettytable.PrettyTable()
+    message_table.field_names = ['index','sender','message']
+    if len(msg) > 0:
+        if len(msg) > 3:
+            msg = msg[:3]
         for i in msg:
             message = json.loads(i['message'])
             encrypt_session_key = base64.b64decode(message['encrypt_session_key'])
             ciphertext = base64.b64decode(message['ciphertext'])
             tag = base64.b64decode(message['tag'])
-            plain, verify = rsa.decrypt(key_service.get_rsa_key('sk', my_pass), encrypt_session_key,ciphertext,tag)
+            plain, verify = rsa.decrypt(key_service.get_rsa_key('sk', my_pass), encrypt_session_key, ciphertext, tag)
             if verify:
-                print(str(plain))
+                num += 1
+                message_table.add_row([num,i['sender'],str(plain, encoding=config.encoding)])
+        print(message_table)
+    else:
+        print("No new message!")
     return True
-        
