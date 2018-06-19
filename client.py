@@ -25,7 +25,7 @@ def client():
     time.sleep(1)
     os.system('cls')
     while True:
-        print('(E)xit\t(S)end\t(R)eceive')
+        print('(E)xit\t(S)end\t(R)eceive\t(R)eceive(R)ead')
         command = input('Please input your command\n')
         if command == 'E':
             os.system('cls')
@@ -39,7 +39,11 @@ def client():
         elif command == 'R':
             os.system('cls')
             print('Receive message')
-            receive_message_interface(password)
+            receive_message_interface(password, is_read=False)
+        elif command == 'RR':
+            os.system('cls')
+            print('Receive message')
+            receive_message_interface(password, is_read=True)
 
 
 if __name__ == '__main__':

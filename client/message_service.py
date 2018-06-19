@@ -65,9 +65,9 @@ def receive_message(receiver, my_pass, is_read=False):
     try:
         if r.json().get('err') == 0:
             os.system('cls')
-            print("Success!")
+            print("Receive message succeed!")
         else:
-            print("Failed")
+            print("Receive message failed")
     except Exception as e:
         print(str(e))
         return False
@@ -76,21 +76,24 @@ def receive_message(receiver, my_pass, is_read=False):
     if not rsa.verify(userdata_service.load_unencrypted_data('server_pk'), json.dumps(msg), signature):
         print("您可能遇到了假的服务器")
         return False
-    num = 0
     message_table = prettytable.PrettyTable()
-    message_table.field_names = ['index','sender','message']
+    message_table.field_names = ['id', 'sender', 'message', 'verified']
     if len(msg) > 0:
-        if len(msg) > 3:
-            msg = msg[:3]
+        if len(msg) > 5:
+            msg = msg[:5]
         for i in msg:
             message = json.loads(i['message'])
             encrypt_session_key = base64.b64decode(message['encrypt_session_key'])
             ciphertext = base64.b64decode(message['ciphertext'])
             tag = base64.b64decode(message['tag'])
             plain, verify = rsa.decrypt(key_service.get_rsa_key('sk', my_pass), encrypt_session_key, ciphertext, tag)
-            if verify:
-                num += 1
-                message_table.add_row([num,i['sender'],str(plain, encoding=config.encoding)])
+            # Add message to table
+            message_table.add_row([
+                i['id'],
+                i['sender'],
+                str(plain, encoding=config.encoding),
+                '√' if verify else '×',
+            ])
         print(message_table)
     else:
         print("No new message!")
