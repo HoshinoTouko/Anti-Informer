@@ -78,6 +78,9 @@ def receive_message(receiver, my_pass, is_read=False):
         return False
     message_table = prettytable.PrettyTable()
     message_table.field_names = ['id', 'sender', 'message', 'verified']
+    # Reverse msg
+    msg.reverse()
+    # Msg cut
     if len(msg) > 0:
         if len(msg) > 5:
             msg = msg[:5]
