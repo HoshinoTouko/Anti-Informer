@@ -10,7 +10,7 @@
 
 该软件来自美国国家标准与技术研究所提供的Special Publication800-22测试包（简称NIST随机性测试）。包含十六种检测手段，安装地址为：https://csrc.nist.gov/projects/random-bit-generation/documentation-and-software，安装完成后解压压缩包，之后输入make指令即可完成安装。
 
-运行时，输入: ./access <data_file_name>，之后根据提示操作即可。
+运行时，输入: ./access <文件大小>，之后根据提示操作即可。
 
 其中包含的具体检测方法如下：
 
